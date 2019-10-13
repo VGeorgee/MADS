@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include "tokenizer.h"
 #include "http.h"
 
 char *test_request_get_verified =   "GET /verified-path HTTP/1.1\nauth-token: auth\n\nkey: value";

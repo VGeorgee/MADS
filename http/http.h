@@ -1,38 +1,69 @@
 #include <stdio.h>
-#include <string.h>
 #include <stdlib.h>
+#ifdef _WIN32
+#include <io.h>
+#else
 #include <unistd.h>
+#endif
+
+
+/**
+ * RESPONSE_HEADER_LENGTH sets the maximal length of response header (http_version + statuscode + message)
+ * */
+#define RESPONSE_HEADER_LENGTH 50
+
+/**
+ * REQUEST_URL_LENGTH sets the maximal length of url used for requests
+ * */
+#define REQUEST_URL_LENGTH 10
+
+/**
+ * AUTH_TOKEN_LENGTH sets the maximal length of the auth-token used for authorization
+ * */
+#define AUTH_TOKEN_LENGTH 15
+
+/**
+ * BODY_LENGHT sets the maximal length of request body
+ * */
+#define BODY_LENGHT 500
+
+#define OK 200
+#define OK_MESSAGE "OK"
+#define UNAUTHORIZED 403
+#define UNAUTHORIZED_MESSAGE "Invalid or missing auth-token"
+#define MISSING 404
+#define MISSING_MESSAGE "Could not found requested resource"
+#define ERROR_MESSAGE "Something went wrong"
+
 
 typedef struct request{
 
-    char *type;
-    char *url;
-    char *token;
+    char type[5];
+    char url[REQUEST_URL_LENGTH];
+    char token[AUTH_TOKEN_LENGTH];
+
     char *header;
-    char *body;
+    char body[BODY_LENGHT];
 
 }REQUEST;
 
 typedef struct response{
 
-    char *header;
     char *body;
     int statuscode;
 
 }RESPONSE;
 
-typedef struct tokens{
-    int array_size;
-    char **array;
-}TOKENS;
 
 /*
     parse_request must parse incoming request for further process
 */
-
 REQUEST *parse_request(char *request);
-TOKENS *string_tokenizer(char *string, char *delimit);
-void free_tokens(TOKENS *token);
+
+
+
+
+
 /*
     process_request must:
         - throw back bad requests, if required
@@ -40,13 +71,25 @@ void free_tokens(TOKENS *token);
         - make further calls to prepare responses from valid requests
     
 */
-
 void process_request(REQUEST *request);
 
 
-RESPONSE *get_request(char *header, char *body);
-RESPONSE *post_request(char *header, char *body);
-RESPONSE *put_request(char *header, char *body);
+RESPONSE *__GET(char *body);
+RESPONSE *__POST(char *auth_type, char *body);
+RESPONSE *__PUT(char *body);
+
+
+
+/**
+ * 
+ * HTTP/1.1 {status code} {message}
+ * 
+ * {body}
+ * 
+ * */
+
+char *get_response(RESPONSE *response);
+
 
 /*
     write response to specified socket

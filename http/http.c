@@ -6,30 +6,35 @@ void send_response(int socket, char *response){
     write(socket, response, strlen(response));
 };
 
-TOKENS *string_tokenizer(char *string, char *delimit){
-    char *string_copy = calloc(sizeof(char), strlen(string) + 1);
-    strcpy(string_copy, string);
-    char delimiter = delimit[0];
 
-    TOKENS *tokens = calloc(sizeof(TOKENS), 1);
-    tokens->array = calloc(sizeof(char *), 20);
-    int size = 0, i;
-    char *pointer = string_copy;
+/**
+ * 
+ * HTTP/1.1 {status code} {message}
+ * 
+ * {body}
+ * 
+ * */
 
-    for(i = 0; string_copy[i]; i++){
-        if(string_copy[i] == delimiter){
-            tokens->array[size++] = pointer;
-            string_copy[i] = '\0';
-            pointer = string_copy + i + 1;
-        }
+char *get_response(RESPONSE *response){
+    char *buffer = calloc(RESPONSE_HEADER_SIZE + strlen(response->body), 1);
+    strcpy(buffer, "HTTP/1.1 ");
+    char statuscode[10];
+    itoa(response->statuscode, statuscode, 10);
+    strcpy(buffer, statuscode);
+
+    char *message = NULL;
+    switch (response->statuscode)
+    { 
+        case OK:{message = OK_MESSAGE;} break;
+        case UNAUTHORIZED:{message = UNAUTHORIZED_MESSAGE;} break;
+        case MISSING:{message = MISSING_MESSAGE;} break;
+        default: {message = ERROR_MESSAGE;} break;
     }
-    tokens->array[size++] = pointer;
-    tokens->array_size = size;
-    return tokens;
-}
+    strcpy(buffer, message);
 
-void free_tokens(TOKENS *token){
-    free(token->array[0]);
-    free(token->array);
-    free(token);
-}
+    strcpy(buffer, "\n\n");
+    if(response->body){
+        strcpy(buffer, response->body);
+    }
+    return buffer;
+};
