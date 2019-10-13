@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #ifdef _WIN32
 #include <io.h>
 #else
@@ -10,17 +11,22 @@
 /**
  * RESPONSE_HEADER_LENGTH sets the maximal length of response header (http_version + statuscode + message)
  * */
-#define RESPONSE_HEADER_LENGTH 50
+#define RESPONSE_HEADER_LENGTH 100
 
 /**
  * REQUEST_URL_LENGTH sets the maximal length of url used for requests
  * */
-#define REQUEST_URL_LENGTH 10
+#define REQUEST_URL_LENGTH  60
 
 /**
  * AUTH_TOKEN_LENGTH sets the maximal length of the auth-token used for authorization
  * */
 #define AUTH_TOKEN_LENGTH 15
+
+/**
+ * AUTH_TOKEN_FIELD sets auth-token field naming in headers
+ * */
+#define AUTH_TOKEN_FIELD "auth-token"
 
 /**
  * BODY_LENGHT sets the maximal length of request body
@@ -49,7 +55,7 @@ typedef struct request{
 /*
     parse_request must parse incoming request for further process
 */
-REQUEST *parse_request(char *request);
+REQUEST *parse_request(char *buffer);
 
 
 typedef struct response{
@@ -139,3 +145,8 @@ void send_response(int socket, char *response);
             }
 
 */
+
+
+
+int skip_line(char *a);
+int string_copy(char *a, char *b, char delimit);

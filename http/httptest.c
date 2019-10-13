@@ -11,6 +11,9 @@ char *test_request_post_register =  "POST /verified-path HTTP/1.1\ntype: registe
 
 
 int main(){
+
+   printf("ASD\n");
+    /*
     send_response(stdout->_fileno, test_request_get_verified);
     TOKENS *tokens = string_tokenizer(test_request_get_verified, "\n");
     printf("\n\nsize: %d\n\n", tokens->array_size);
@@ -19,5 +22,10 @@ int main(){
         puts(tokens->array[i]);
     }
     free_tokens(tokens);
+    */
+
+    REQUEST *request = parse_request(test_request_get_verified);
+
+    printf("method: |%s|\nurl: |%s|\ntoken: |%s|\nbody: |%s|\n", request->type, request->url, request->token, request->body);
     return 0;
 }
