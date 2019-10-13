@@ -46,6 +46,11 @@ typedef struct request{
     char body[BODY_LENGHT];
 
 }REQUEST;
+/*
+    parse_request must parse incoming request for further process
+*/
+REQUEST *parse_request(char *request);
+
 
 typedef struct response{
 
@@ -53,12 +58,11 @@ typedef struct response{
     int statuscode;
 
 }RESPONSE;
+RESPONSE *__GET(char *body);
+RESPONSE *__POST(char *auth_type, char *body);
+RESPONSE *__PUT(char *body);
 
 
-/*
-    parse_request must parse incoming request for further process
-*/
-REQUEST *parse_request(char *request);
 
 
 
@@ -72,11 +76,6 @@ REQUEST *parse_request(char *request);
     
 */
 void process_request(REQUEST *request);
-
-
-RESPONSE *__GET(char *body);
-RESPONSE *__POST(char *auth_type, char *body);
-RESPONSE *__PUT(char *body);
 
 
 

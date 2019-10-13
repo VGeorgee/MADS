@@ -16,7 +16,7 @@ void send_response(int socket, char *response){
  * */
 
 char *get_response(RESPONSE *response){
-    char *buffer = calloc(RESPONSE_HEADER_SIZE + strlen(response->body), 1);
+    char *buffer = calloc(RESPONSE_HEADER_LENGTH + strlen(response->body), 1);
     strcpy(buffer, "HTTP/1.1 ");
     char statuscode[10];
     itoa(response->statuscode, statuscode, 10);
