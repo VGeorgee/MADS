@@ -6,8 +6,8 @@
 
 char *test_request_get_verified =   "GET /verified-path HTTP/1.1\nauth-token: auth\n\nkey: value";
 char *test_request_get_unverified = "GET /verified-path HTTP/1.1\nauth: auth\n\nkey: value";
-char *test_request_post_login =  "POST /verified-path HTTP/1.1\ntype: login\n\nkey: value";
-char *test_request_post_register =  "POST /verified-path HTTP/1.1\ntype: register\n\nkey: value";
+char *test_request_post_login =  "POST /verified-path HTTP/1.1\nauth-reason: login\n\nkey: value";
+char *test_request_post_register =  "POST /verified-path HTTP/1.1\nauth-reason: register\n\nkey: value";
 
 
 int main(){
@@ -25,7 +25,8 @@ int main(){
     */
 
     REQUEST *request = parse_request(test_request_get_verified);
+    printf("\n\n\n------------------\n%s\n", process_request(request));
 
-    printf("method: |%s|\nurl: |%s|\ntoken: |%s|\nbody: |%s|\n", request->type, request->url, request->token, request->body);
+    //printf("method: |%s|\nurl: |%s|\ntoken: |%s|\nreason: |%s|\nbody: |%s|\n", request->type, request->url, request->token, request->reason, request->body);
     return 0;
 }

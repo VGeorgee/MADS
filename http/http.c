@@ -16,6 +16,9 @@ REQUEST *parse_request(char *buffer){
         if(strncmp(buffer + offset, AUTH_TOKEN_FIELD, strlen(AUTH_TOKEN_FIELD)) == 0){
             offset += string_copy(request->token, buffer + offset + strlen(AUTH_TOKEN_FIELD) + 2, ' '); // + 2 is ": " from "token: token" && token  MUST NOT contain spaces
         }
+        else if(strncmp(buffer + offset, POST_REASON_FIELD, strlen(POST_REASON_FIELD)) == 0){
+            offset += string_copy(request->reason, buffer + offset + strlen(POST_REASON_FIELD) + 2, ' '); // + 2 is ": " from "reason: reason" && reason MUST BE login || register
+        }
         offset += skip_line(buffer + offset);
     }
 
@@ -36,6 +39,50 @@ int string_copy(char *a, char *b, char delimit){
     return i;
 }
 
+
+RESPONSE *new_response(int statuscode){
+    RESPONSE *response = calloc(sizeof(RESPONSE), 1);
+    response->body = NULL;
+    response->statuscode = statuscode;
+}
+
+#define AUTHENTICATED_USER 1
+
+
+
+char *process_request(REQUEST *request){
+    RESPONSE *response = NULL;
+    if(strcmp(request->type, "GET") == 0){
+        if(AUTHENTICATED_USER){
+            response = __GET(request->token, request->body);
+        } else{
+            response = new_response(UNAUTHORIZED);
+        }
+    }
+
+    else if(strcmp(request->type, "PUT") == 0){ 
+
+        if(AUTHENTICATED_USER){
+            response = __PUT(request->token, request->body);
+        } else{
+            response = new_response(UNAUTHORIZED);
+        }
+
+    }
+/*
+    else if(strcmp(request->type, "POST") == 0){
+
+    }
+  */  
+    if(response == NULL){
+        response = new_response(INVALID_REQUEST);
+    }
+
+    char *response_to_return = get_response(response);
+    free(response);
+    return response_to_return;
+}
+
 int skip_line(char *a){
     int i;
     for(i = 0; a[i] && a[i] != '\n'; i++);
@@ -45,11 +92,14 @@ int skip_line(char *a){
 
 
 char *get_response(RESPONSE *response){
-    char *buffer = calloc(RESPONSE_HEADER_LENGTH + strlen(response->body), 1);
+    int body_length = response->body ? strlen(response->body) : 0;
+
+    char *buffer = calloc(RESPONSE_HEADER_LENGTH + body_length, 1);
     strcpy(buffer, "HTTP/1.1 ");
+
     char statuscode[10];
     sprintf(statuscode, "%d", response->statuscode);
-    strcpy(buffer, statuscode);
+    strcat(buffer, statuscode);
 
     char *message = NULL;
     switch (response->statuscode)
@@ -57,13 +107,15 @@ char *get_response(RESPONSE *response){
         case OK:{message = OK_MESSAGE;} break;
         case UNAUTHORIZED:{message = UNAUTHORIZED_MESSAGE;} break;
         case MISSING:{message = MISSING_MESSAGE;} break;
+        case INVALID_REQUEST: {message = INVALID_REQUEST_TYPE_MESSAGE;} break;
         default: {message = ERROR_MESSAGE;} break;
     }
-    strcpy(buffer, message);
 
-    strcpy(buffer, "\n\n");
+    strcat(buffer, " ");
+    strcat(buffer, message);
     if(response->body){
-        strcpy(buffer, response->body);
+        strcat(buffer, "\n\n");
+        strcat(buffer, response->body);
     }
     return buffer;
 };
@@ -73,3 +125,19 @@ void send_response(int socket, char *response){
     write(socket, response, strlen(response));
 };
 
+
+RESPONSE *__GET(char *user, char *body){
+    RESPONSE *response = calloc(sizeof(RESPONSE), 1);
+    response->statuscode = 200;
+    response->body = calloc(100, 1);
+    strcpy(response->body, "ITT AZ ADAT");
+    return response;
+};
+
+RESPONSE *__POST(char *auth_type, char *user, char *body){
+    return NULL;
+};
+
+RESPONSE *__PUT(char *user, char *body){
+    return NULL;
+};

@@ -19,7 +19,7 @@
 #define REQUEST_URL_LENGTH  60
 
 /**
- * AUTH_TOKEN_LENGTH sets the maximal length of the auth-token used for authorization
+ * AUTH_TOKEN_LENGTH sets the maximal length of the AUTH_TOKEN_FIELD field used for authorization
  * */
 #define AUTH_TOKEN_LENGTH 15
 
@@ -29,9 +29,22 @@
 #define AUTH_TOKEN_FIELD "auth-token"
 
 /**
+ * POST_REASON_FIELD_LENGTH sets the maximal length of the POST_REASON_FIELD field used for post reasoning
+ * */
+#define POST_REASON_FIELD_LENGTH 20
+
+/**
+ * POST_REASON_FIELD sets reason field naming in post headers
+ * */
+#define POST_REASON_FIELD "auth-reason"
+
+/**
  * BODY_LENGHT sets the maximal length of request body
  * */
 #define BODY_LENGHT 500
+
+
+
 
 #define OK 200
 #define OK_MESSAGE "OK"
@@ -40,6 +53,8 @@
 #define MISSING 404
 #define MISSING_MESSAGE "Could not found requested resource"
 #define ERROR_MESSAGE "Something went wrong"
+#define INVALID_REQUEST 500
+#define INVALID_REQUEST_TYPE_MESSAGE "Invalid Request Type"
 
 
 typedef struct request{
@@ -47,6 +62,7 @@ typedef struct request{
     char type[5];
     char url[REQUEST_URL_LENGTH];
     char token[AUTH_TOKEN_LENGTH];
+    char reason[POST_REASON_FIELD_LENGTH];
 
     char *header;
     char body[BODY_LENGHT];
@@ -64,9 +80,9 @@ typedef struct response{
     int statuscode;
 
 }RESPONSE;
-RESPONSE *__GET(char *body);
-RESPONSE *__POST(char *auth_type, char *body);
-RESPONSE *__PUT(char *body);
+RESPONSE *__GET(char *user, char *body);
+RESPONSE *__POST(char *auth_type, char *user, char *body);
+RESPONSE *__PUT(char *user, char *body);
 
 
 
@@ -81,7 +97,7 @@ RESPONSE *__PUT(char *body);
         - make further calls to prepare responses from valid requests
     
 */
-void process_request(REQUEST *request);
+char *process_request(REQUEST *request);
 
 
 
