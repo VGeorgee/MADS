@@ -42,7 +42,6 @@ int string_copy(char *a, char *b, char delimit){
 
 RESPONSE *new_response(int statuscode){
     RESPONSE *response = calloc(sizeof(RESPONSE), 1);
-    response->body = NULL;
     response->statuscode = statuscode;
 }
 
@@ -53,11 +52,13 @@ RESPONSE *new_response(int statuscode){
 char *process_request(REQUEST *request){
     RESPONSE *response = NULL;
     if(strcmp(request->type, "GET") == 0){
+
         if(AUTHENTICATED_USER){
             response = __GET(request->token, request->body);
         } else{
             response = new_response(UNAUTHORIZED);
         }
+
     }
 
     else if(strcmp(request->type, "PUT") == 0){ 
@@ -69,12 +70,18 @@ char *process_request(REQUEST *request){
         }
 
     }
-/*
     else if(strcmp(request->type, "POST") == 0){
 
+        if(strcmp(request->reason, "login") == 0){
+            response = __POST(LOGIN, request->token, request->body);
+        } else if(strcmp(request->reason, "register") == 0){
+            response = __POST(REGISTER, NULL, request->body);
+        } else{
+            response = new_response(INVALID_REQUEST);
+        }
+
     }
-  */  
-    if(response == NULL){
+    else{
         response = new_response(INVALID_REQUEST);
     }
 
@@ -113,7 +120,11 @@ char *get_response(RESPONSE *response){
 
     strcat(buffer, " ");
     strcat(buffer, message);
-    if(response->body){
+    if(response->token[0]){
+        strcat(buffer, "\n");
+        strcat(buffer, response->token);
+    }
+    if(response->body[0]){
         strcat(buffer, "\n\n");
         strcat(buffer, response->body);
     }
@@ -129,13 +140,23 @@ void send_response(int socket, char *response){
 RESPONSE *__GET(char *user, char *body){
     RESPONSE *response = calloc(sizeof(RESPONSE), 1);
     response->statuscode = 200;
-    response->body = calloc(100, 1);
     strcpy(response->body, "ITT AZ ADAT");
     return response;
 };
 
-RESPONSE *__POST(char *auth_type, char *user, char *body){
-    return NULL;
+RESPONSE *__POST(int auth_reason, char *user, char *body){
+    RESPONSE *response;
+
+    if(auth_reason == LOGIN){
+        ;
+    } else if(auth_reason == REGISTER){
+        ;
+    }
+    else {
+        response = new_response(INVALID_REQUEST);
+    }
+    
+    return response;
 };
 
 RESPONSE *__PUT(char *user, char *body){
