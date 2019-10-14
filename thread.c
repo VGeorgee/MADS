@@ -22,9 +22,8 @@ void *myThreadFun(void *vargp)
 
     int iters = 0, foglalasid, rnd_thread;
     //sleep(((float)rand() / RAND_MAX) * 5); 
-        usleep(((float)rand() / RAND_MAX) * 29);
+        usleep(((float)rand() / RAND_MAX) * 7);
     while(foglal(vargp) != vargp){
-        usleep(((float)rand() / RAND_MAX) * 29);
         iters++;
     } 
 
@@ -34,7 +33,7 @@ void *myThreadFun(void *vargp)
 
     //usleep(((float)rand() / RAND_MAX) * 5);
     printf("threadID: %2lld\tfoglalt_thread: %3d\tallitott szam: %2d\t varakozasok:%4d\n", (long long)vargp, foglalasid, rnd_thread , iters);
-    usleep(500);
+    usleep(50);
     foglalt = 0;
     return NULL; 
 }
@@ -44,7 +43,7 @@ int main()
     srand(time(NULL));
     pthread_t thread_id; 
     printf("Before Thread\n"); 
-    for(long long i = 0; i < 500; usleep(1), i++)
+    for(long long i = 0; i < 50000; usleep(200), i++)
         pthread_create(&thread_id, NULL, myThreadFun, (void * restrict)i); 
     //pthread_join(thread_id, NULL); 
     printf("After Thread\n"); 
