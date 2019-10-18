@@ -44,7 +44,8 @@
 #define BODY_LENGHT 500
 
 
-
+#define LOGIN 1
+#define REGISTER 2
 
 #define OK 200
 #define OK_MESSAGE "OK"
@@ -76,12 +77,13 @@ REQUEST *parse_request(char *buffer);
 
 typedef struct response{
 
-    char *body;
+    char token[AUTH_TOKEN_LENGTH];
+    char body[BODY_LENGHT];
     int statuscode;
 
 }RESPONSE;
 RESPONSE *__GET(char *user, char *body);
-RESPONSE *__POST(char *auth_type, char *user, char *body);
+RESPONSE *__POST(int auth_reason, char *user, char *body);
 RESPONSE *__PUT(char *user, char *body);
 
 
